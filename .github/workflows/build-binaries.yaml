@@ -1,0 +1,53 @@
+# Build binary packages for distribution
+name: Build Binary Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.config.os }}
+    name: Build ${{ matrix.config.os }} binary
+    
+    strategy:
+      matrix:
+        config:
+          - {os: windows-latest, r: 'release', ext: 'zip'}
+          - {os: macos-latest, r: 'release', ext: 'tgz'}
+          - {os: ubuntu-latest, r: 'release', ext: 'tar.gz'}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          use-public-rspm: true
+      
+      - uses: r-lib/actions/setup-r-dependencies@v2
+      
+      - name: Build package
+        run: |
+          dir.create("build", showWarnings = FALSE)
+          pkg <- pkgbuild::build(dest_path = "build", binary = TRUE, vignettes = FALSE)
+          cat("PKG_FILE=", basename(pkg), "\n", file = Sys.getenv("GITHUB_ENV"), sep = "", append = TRUE)
+        shell: Rscript {0}
+      
+      - name: Upload binary package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-binary-package
+          path: build/*
+          retention-days: 90
+      
+      - name: Upload to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*

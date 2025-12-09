@@ -50,3 +50,11 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+      
+      - name: Upload binary package
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-binary
+          path: check/*.tar.gz
+          retention-days: 30
