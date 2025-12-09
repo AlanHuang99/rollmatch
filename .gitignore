@@ -4,3 +4,5 @@ rollmatch.Rproj
 .Rproj.user
 .Rhistory
 CRAN-SUBMISSION
+*.tar.gz
+*.Rcheck/

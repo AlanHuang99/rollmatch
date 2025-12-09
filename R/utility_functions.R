@@ -394,7 +394,7 @@ make_output <- function(scored_data, data, matches,
 #' @keywords internal
 add_balance_table <- function(scored_data, vars, tm, id, combined_output,
                               treat, matches){
-  treat_group <- scored_data[, vars] %>% dplyr::group_by_(treat)
+  treat_group <- scored_data[, vars] %>% dplyr::group_by(.data[[treat]])
 
   full_summary <-
     cbind(as.data.frame(t(dplyr::summarise_all(treat_group, mean))),
@@ -410,7 +410,7 @@ add_balance_table <- function(scored_data, vars, tm, id, combined_output,
 
   data_assigned <- merge(scored_data, unique(rbind(ta, ca)))
 
-  treat_group <- data_assigned[, vars] %>% dplyr::group_by_(treat)
+  treat_group <- data_assigned[, vars] %>% dplyr::group_by(.data[[treat]])
 
   matched_summary <-
     cbind(as.data.frame(t(dplyr::summarise_all(treat_group, mean))),
