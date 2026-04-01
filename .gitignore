@@ -6,3 +6,6 @@ rollmatch.Rproj
 CRAN-SUBMISSION
 *.tar.gz
 *.Rcheck/
+__pycache__/
+*.pyc
+.venv/
